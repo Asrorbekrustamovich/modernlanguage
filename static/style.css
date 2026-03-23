@@ -1,0 +1,43 @@
+body {
+    background-color: #f4f7f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.upload-area {
+    background-color: #f8fbff;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+    background-color: #eaf3ff;
+    border-color: #0d6efd !important;
+}
+
+.border-dashed {
+    border-style: dashed !important;
+}
+
+.result-content {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: #333;
+}
+
+.result-content h1, .result-content h2, .result-content h3 {
+    color: #0d6efd;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.result-content p {
+    margin-bottom: 1.2rem;
+}
+
+.result-content strong {
+    color: #2c3e50;
+}
+
+.pointer-events-none {
+    pointer-events: none;
+}
