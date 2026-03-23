@@ -19,7 +19,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # Gemini API sozlamalari
 api_key = os.environ.get('GEMINI_API_KEY')
     
-model_name = 'gemini-1.5-pro' # Rasm o'qish va tarjima uchun eng yaxshisi
+model_name = 'gemini-2.5-flash' # Rasm o'qish va tarjima uchun
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
