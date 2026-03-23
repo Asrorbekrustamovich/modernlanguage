@@ -1,9 +1,12 @@
 import os
 import markdown
+import requests
+import base64
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, flash, url_for
 from werkzeug.utils import secure_filename
-import google.generativeai as genai
-from PIL import Image
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
@@ -15,8 +18,6 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Gemini API sozlamalari
 api_key = os.environ.get('GEMINI_API_KEY')
-if api_key:
-    genai.configure(api_key=api_key)
     
 model_name = 'gemini-1.5-pro' # Rasm o'qish va tarjima uchun eng yaxshisi
 
@@ -24,6 +25,10 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -47,10 +52,6 @@ def index():
             file.save(filepath)
             
             try:
-                # Rasmni ochish va Gemini yordamida o'qish
-                img = Image.open(filepath)
-                model = genai.GenerativeModel(model_name)
-                
                 prompt = """
                 Quyidagi rasmda eski yozuvdagi (arab, fors yoki eski o'zbek/chig'atoy tilidagi nastaliq xati) hujjat yoki qog'oz parchasi bor.
                 Iltimos, shu matnni o'qib, uni hozirgi zamonaviy o'zbek tiliga o'girib ber.
@@ -61,10 +62,51 @@ def index():
                 P.S. Asosan eski yozuvga (qog'ozdagi yozuvga) e'tibor qarating, fondagi lotincha yozuvlarga e'tibor qaratmang.
                 """
                 
-                response = model.generate_content([prompt, img])
-                result_html = markdown.markdown(response.text)
+                base64_image = encode_image(filepath)
+                mime_type = "image/jpeg"
+                ext = filename.lower().rsplit('.', 1)[1]
+                if ext == 'png':
+                    mime_type = "image/png"
+                elif ext == 'webp':
+                    mime_type = "image/webp"
+                elif ext == 'gif':
+                    mime_type = "image/gif"
+
+                headers = {'Content-Type': 'application/json'}
+                data = {
+                    "contents": [{
+                        "parts": [
+                            {"text": prompt},
+                            {
+                                "inline_data": {
+                                    "mime_type": mime_type,
+                                    "data": base64_image
+                                }
+                            }
+                        ]
+                    }],
+                    "generationConfig": {
+                        "temperature": 0.4
+                    }
+                }
                 
-                return render_template('result.html', filename=filename, result=result_html)
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+                response = requests.post(url, headers=headers, json=data)
+                
+                if response.status_code == 200:
+                    resp_json = response.json()
+                    candidates = resp_json.get('candidates', [])
+                    if candidates and 'content' in candidates[0]:
+                        parts = candidates[0]['content'].get('parts', [])
+                        text = parts[0].get('text', '')
+                        result_html = markdown.markdown(text)
+                        return render_template('result.html', filename=filename, result=result_html)
+                    else:
+                        raise Exception("Noma'lum javob formati")
+                else:
+                    error_msg = response.json().get('error', {}).get('message', 'Noma\'lum xatolik')
+                    raise Exception(f"API Xatosi (Kodi {response.status_code}): {error_msg}")
+                    
             except Exception as e:
                 flash(f"Xatolik yuz berdi: {str(e)}", "error")
                 return redirect(request.url)
