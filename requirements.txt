@@ -4,3 +4,4 @@ Werkzeug
 Pillow
 Markdown
 python-dotenv
+fpdf2
