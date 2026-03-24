@@ -1,49 +1,70 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
+<div class="row justify-content-center animate-ink">
     <div class="col-md-9">
-        <div class="card shadow border-0 rounded-4">
-            <div class="card-body p-5 text-center">
-                <h2 class="mb-4 text-primary fw-bold">Qadimiy qo'lyozmalarni zamonaviy o'zbek tiliga o'girish</h2>
-                <p class="text-secondary mb-5 fs-5">
-                    Arab, fors yoki chig'atoy tilidagi (nastaliq xatidagi) matnlar tushirilgan rasmni yuklang. 
-                    Sun'iy intellekt uni o'qib, tahlil qilib, hozirgi o'zbek tiliga tarjima qilib beradi.
-                </p>
-                
-                <form action="/" method="post" enctype="multipart/form-data">
-                    <div class="mb-4 upload-area p-5 border border-2 border-primary border-dashed rounded-4 position-relative">
-                        <input class="form-control file-input position-absolute w-100 h-100 top-0 start-0 opacity-0" type="file" id="file" name="file" accept="image/*" required style="cursor: pointer;">
-                        <div class="upload-content pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-cloud-arrow-up text-primary mb-3" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"/>
-                                <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
-                            </svg>
-                            <h4 class="text-primary mb-2">Rasm tanlash uchun bosing</h4>
-                            <p class="text-muted mb-0">yoki faylni shu yerga tashlang</p>
-                            <p class="text-muted small mt-2 file-name-display"></p>
+        <!-- Historical Warning -->
+        <div class="historical-warning rounded-1 animate-ink" style="animation-delay: 0.5s;">
+            <span class="warning-icon">⏳</span>
+            <div>
+                <strong>Eslatma:</strong> Qadimiy matnlarni tahlil qilish va tarjima qilish jarayoni biroz vaqt talab qilishi mumkin (bir necha daqiqagacha). Iltimos, sabr qiling.
+            </div>
+        </div>
+
+        <div class="card border-0">
+            <div class="card-body p-5 text-center position-relative">
+                <!-- Special Loader Overlay -->
+                <div id="loader-overlay" class="thematic-loader rounded-1">
+                    <div class="loader-icon">🖋️</div>
+                    <div class="loading-text">Matn o'qilmoqda va tarjima qilinmoqda...</div>
+                    <p class="small text-muted mt-2">Bu jarayon bir necha daqiqa olishi mumkin</p>
+                </div>
+
+                <div id="main-content">
+                    <div class="ornament mb-3">❧</div>
+                    <h2 class="mb-4 fw-bold">Qadimiy qo'lyozmalarni zamonaviy o'zbek tiliga o'girish</h2>
+                    <p class="text-sepia mb-5 fs-5 italic">
+                        Arab, fors yoki chig'atoy tilidagi matnlar tushirilgan rasm yoki hujjatni yuklang.
+                        Sun'iy intellekt uni o'qib, tahlil qilib, hozirgi o'zbek tiliga tarjima qilib beradi.
+                    </p>
+
+                    <form action="/" method="post" enctype="multipart/form-data">
+                        <div class="mb-5 upload-area p-5 rounded-1 position-relative">
+                            <input class="form-control file-input position-absolute w-100 h-100 top-0 start-0 opacity-0"
+                                type="file" id="file" name="file" accept="image/*" required style="cursor: pointer;">
+                            <div class="upload-content pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor"
+                                    class="bi bi-journal-richtext mb-3" viewBox="0 0 16 16" style="color: var(--leather);">
+                                    <path d="M7.5 3.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0M11 8a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2A.5.5 0 0 1 11 8m.5 2.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1z"/>
+                                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm10 0H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1"/>
+                                </svg>
+                                <h4 class="mb-2">Hujjatni yuklash</h4>
+                                <p class="text-muted mb-0">Rasm tanlash uchun bosing yoki faylni shu yerga tashlang</p>
+                                <p class="text-muted small mt-2 file-name-display"></p>
+                            </div>
                         </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold shadow">
-                        <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
-                        Tarjima qilish
-                    </button>
-                </form>
+                        <button type="submit" class="btn btn-primary btn-lg px-5 py-3 shadow-lg">
+                            O'girish (Tarjima qilish)
+                        </button>
+                    </form>
+                    <div class="ornament mt-4">❦</div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    document.querySelector('.file-input').addEventListener('change', function(e) {
+    document.querySelector('.file-input').addEventListener('change', function (e) {
         var fileName = e.target.files[0] ? e.target.files[0].name : '';
         document.querySelector('.file-name-display').textContent = fileName ? 'Tanlangan fayl: ' + fileName : '';
     });
-    
-    document.querySelector('form').addEventListener('submit', function() {
+
+    document.querySelector('form').addEventListener('submit', function () {
+        document.getElementById('main-content').style.opacity = '0.3';
+        document.getElementById('loader-overlay').style.display = 'block';
         const btn = this.querySelector('button[type="submit"]');
         btn.classList.add('disabled');
-        btn.querySelector('.spinner-border').classList.remove('d-none');
     });
 </script>
 {% endblock %}

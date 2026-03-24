@@ -1,27 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
-    <h3 class="mb-0 text-primary">Tahlil va Tarjima natijasi</h3>
-    <a href="/" class="btn btn-outline-primary px-4 rounded-pill">Orqaga qaytish</a>
+<div class="d-flex justify-content-between align-items-center mb-5 mt-3">
+    <h3 class="mb-0">📜 Tahlil va Tarjima natijasi</h3>
+    <a href="/" class="btn btn-outline-primary px-4">Orqaga qaytish</a>
 </div>
 
 <div class="row">
     <div class="col-lg-5 mb-4">
-        <div class="card shadow-sm border-0 rounded-4 h-100">
-            <div class="card-header bg-white border-bottom-0 pt-4 pb-0 text-center">
-                <h5 class="text-muted fw-bold">Asl hujjat</h5>
+        <div class="card h-100">
+            <div class="card-header bg-transparent border-0 pt-4 pb-0 text-center">
+                <h5 class="fw-bold">Asl hujjat</h5>
+                <div class="ornament small">❦</div>
             </div>
             <div class="card-body p-4 text-center d-flex align-items-center justify-content-center">
-                <img src="{{ url_for('static', filename='uploads/' + filename) }}" class="img-fluid rounded-3 shadow-sm border" alt="Yuklangan rasm" style="max-height: 600px; object-fit: contain;">
+                <img src="{{ url_for('static', filename='uploads/' + filename) }}" class="img-fluid border-leather shadow" alt="Yuklangan rasm" style="max-height: 600px; object-fit: contain; border: 4px solid var(--leather);">
             </div>
         </div>
     </div>
     
     <div class="col-lg-7 mb-4">
-        <div class="card shadow border-0 rounded-4 h-100 border-top border-primary border-4">
+        <div class="card h-100">
             <div class="card-body p-5 result-content">
+                <div class="ornament mb-3">❦ &nbsp; 📜 &nbsp; ❧</div>
                 {{ result | safe }}
+                <div class="ornament mt-4">❧</div>
             </div>
         </div>
     </div>
