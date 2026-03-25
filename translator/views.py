@@ -14,7 +14,7 @@ from fpdf import FPDF
 from .models import TranslationResult
 
 # Gemini API settings
-model_name = 'gemini-2.5-flash' # Stable version
+model_name = 'gemini-1.5-flash' # Barqaror va tezkor model
 
 @login_required
 def index(request):
@@ -28,61 +28,30 @@ def index(request):
         if not file:
             messages.error(request, "Fayl tanlanmadi")
             return redirect('index')
-        
         try:
-            # Save the result object first to get a path for the image
+            # Modelni tanlash
+            model_name = request.POST.get('model_name', 'gemini-1.5-flash')
+            
+            # Reverting to requests approach as SDK version is outdated
             result_obj = TranslationResult(original_image=file)
             result_obj.save()
-            
             filepath = result_obj.original_image.path
-            
-            prompt = """
-            Siz qadimiy qo'lyozmalar, hujjatlar va tarixiy matnlar bo'yicha mutaxassis emassiz.
-            Quyidagi hujjatda (rasm yoki PDF) eski yozuvdagi (arab, fors yoki eski o'zbek/chig'atoy tilidagi nastaliq xati) matnlar bor.
-            
-            Vazifangiz:
-            1. Matnni sinchiklab o'qib, uning **transkripsiyasini** (o'qilishini) yozing.
-            2. Matnni hozirgi zamonaviy o'zbek tiliga **so'zma-so'z va badiiy tarjima** qiling.
-            3. **MA'NOSI VA TAHLILI:** Bu qismga alohida e'tibor bering. Matnning umumiy mazmuni, maqsadi, muallif nima demoqchi bo'lgani va matnning tarixiy/madaniy ahamiyatini chuqur tushuntirib bering.
-            4. **Tarixiy atamalar:** Matndagi qadimiy so'zlar va iboralarning izohini bering.
-
-            Natijani chiroyli Markdown formatida quyidagi tartibda chiqaring:
-            ### 📜 Asl matn (O'qilishi)
-            [Transkripsiya bu yerda]
-
-            ### ✍️ Zamonaviy o'zbek tilidagi tarjimasi
-            [Tarjima bu yerda]
-
-            ### 💡 Batafsil ma'nosi va chuqur tahlili
-            [Bu yerda matnning mazmuni va mohiyatini juda batafsil tushuntirib bering]
-
-            ### 📚 Tarixiy atamalar va izohlar
-            [Izohlar bu yerda]
-
-            P.S. Hujjatdagi har bir so'z va belgiga e'tibor bering.
-            """
             
             with open(filepath, "rb") as f:
                 base64_data = base64.b64encode(f.read()).decode('utf-8')
             
-            ext = filepath.lower().rsplit('.', 1)[1]
-            mime_type = "image/jpeg"
-            if ext == 'png': mime_type = "image/png"
-            elif ext == 'webp': mime_type = "image/webp"
-            elif ext == 'gif': mime_type = "image/gif"
-            elif ext == 'pdf': mime_type = "application/pdf"
-
             headers = {'Content-Type': 'application/json'}
             data = {
                 "contents": [{
                     "parts": [
-                        {"text": prompt},
-                        {"inline_data": {"mime_type": mime_type, "data": base64_data}}
+                        {"text": "Ushbu rasmda yozilgan matnlarni o'qing, ularni zamonaviy o'zbek tiliga tarjima qiling va chuqur tahlilini bering. Markdown formatida chop eting."},
+                        {"inline_data": {"mime_type": "image/jpeg", "data": base64_data}}
                     ]
                 }],
                 "generationConfig": {"temperature": 0.4}
             }
             
+            # Request approach
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
             response = requests.post(url, headers=headers, json=data)
             
@@ -103,7 +72,7 @@ def index(request):
                     raise Exception("Noma'lum javob formati")
             else:
                 error_msg = response.json().get('error', {}).get('message', 'Noma\'lum xatolik')
-                raise Exception(f"API Xatosi: {error_msg}")
+                raise Exception(f"API Xatosi (Kodi {response.status_code}): {error_msg}")
                 
         except Exception as e:
             messages.error(request, f"Xatolik yuz berdi: {str(e)}")
