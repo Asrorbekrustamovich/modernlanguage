@@ -6,6 +6,7 @@ import io
 import re
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
@@ -171,3 +172,15 @@ def download_pdf(request, pk):
     except Exception as e:
         messages.error(request, f"PDF yaratishda xatolik: {str(e)}")
         return redirect('result_detail', pk=pk)
+
+@login_required
+@require_POST
+def delete_result(request, pk):
+    result_obj = get_object_or_404(TranslationResult, pk=pk)
+    if result_obj.original_image:
+        if os.path.isfile(result_obj.original_image.path):
+            os.remove(result_obj.original_image.path)
+    
+    result_obj.delete()
+    messages.success(request, "Tarjima muvaffaqiyatli o'chirildi.")
+    return redirect('history')

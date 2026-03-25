@@ -37,8 +37,19 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <a href="{% url 'result_detail' res.pk %}" class="btn btn-sm btn-outline-primary">Ko'rish</a>
-                                            <a href="{% url 'download_pdf' res.pk %}" class="btn btn-sm btn-link text-leather">PDF</a>
+                                            <div class="btn-group">
+                                                <a href="{% url 'result_detail' res.pk %}" class="btn btn-sm btn-outline-primary">Ko'rish</a>
+                                                <a href="{% url 'download_pdf' res.pk %}" class="btn btn-sm btn-link text-leather">PDF</a>
+                                                
+                                                <form action="{% url 'delete_result' res.pk %}" method="post" 
+                                                      onsubmit="return confirm('Haqiqatan ham ushbu tarjimani o\'chirmoqchimisiz?');"
+                                                      style="display:inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm text-danger border-0 bg-transparent" title="O'chirish">
+                                                        🗑️
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 {% endfor %}

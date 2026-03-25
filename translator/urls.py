@@ -6,6 +6,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('history/', views.history, name='history'),
     path('result/<int:pk>/', views.result_detail, name='result_detail'),
+    path('result/<int:pk>/delete/', views.delete_result, name='delete_result'),
     path('download_pdf/<int:pk>/', views.download_pdf, name='download_pdf'),
     
     # Auth
