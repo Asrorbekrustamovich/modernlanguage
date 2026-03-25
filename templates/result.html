@@ -4,12 +4,8 @@
 <div class="d-flex justify-content-between align-items-center mb-5 mt-3">
     <h3 class="mb-0">📜 Tahlil va Tarjima natijasi</h3>
     <div class="d-flex gap-2">
-        <form action="/download_pdf" method="post">
-            <input type="hidden" name="result_text" value="{{ result }}">
-            <input type="hidden" name="filename" value="{{ filename }}">
-            <button type="submit" class="btn btn-primary px-4">PDF yuklab olish</button>
-        </form>
-        <a href="/" class="btn btn-outline-primary px-4">Orqaga qaytish</a>
+        <a href="{% url 'download_pdf' result_obj.pk %}" class="btn btn-primary px-4">PDF yuklab olish</a>
+        <a href="{% url 'index' %}" class="btn btn-outline-primary px-4">Orqaga qaytish</a>
     </div>
 </div>
 
@@ -21,16 +17,16 @@
                 <div class="ornament small">❦</div>
             </div>
             <div class="card-body p-4 text-center d-flex align-items-center justify-content-center">
-                {% if is_pdf %}
+                {% if result_obj.original_image.name|lower|slice:"-4:" == ".pdf" %}
                 <div class="p-5">
                     <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" fill="currentColor" class="bi bi-file-earmark-pdf mb-3" viewBox="0 0 16 16" style="color: var(--leather);">
                         <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2.5A1.5 1.5 0 0 1 9.5 3m-1 7c0 .646-.566 1.097-1.302 1.097H6.5v1.262h-.94V10.1h1.122c.63 0 1.154.246 1.154.896m-1.15-.322h-.274v.603h.274c.18 0 .323-.111.323-.301 0-.17-.113-.302-.323-.302m3.684.322v.322c0 .352-.164.801-.514.801-.358 0-.541-.462-.541-.801v-.322c0-.341.178-.8.541-.8.326 0 .514.43.514.801m-.95 0v.322c0 .196.059.444.198.444.16 0 .21-.24.21-.444v-.322c0-.352-.099-.445-.21-.445-.114 0-.198.125-.198.445m1.667-.765c.334 0 .504.144.615.308l-.757.482c-.07-.101-.15-.156-.279-.156-.193 0-.363.19-.363.507v.055c0 .317.155.508.384.508.191 0 .285-.115.346-.191l.754.446c-.155.253-.406.47-.84.47-.45 0-.806-.319-.806-.917v-.052c0-.586.348-.921.806-.921"/>
                     </svg>
-                    <h5 class="mt-2">{{ filename }}</h5>
-                    <a href="{{ url_for('static', filename='uploads/' + filename) }}" target="_blank" class="btn btn-outline-primary btn-sm mt-3">PDF faylni ko'rish</a>
+                    <h5 class="mt-2">{{ result_obj.original_image.name }}</h5>
+                    <a href="{{ result_obj.original_image.url }}" target="_blank" class="btn btn-outline-primary btn-sm mt-3">PDF faylni ko'rish</a>
                 </div>
                 {% else %}
-                <img src="{{ url_for('static', filename='uploads/' + filename) }}" class="img-fluid border-leather shadow" alt="Yuklangan rasm" style="max-height: 600px; object-fit: contain; border: 4px solid var(--leather);">
+                <img src="{{ result_obj.original_image.url }}" class="img-fluid border-leather shadow" alt="Yuklangan rasm" style="max-height: 600px; object-fit: contain; border: 4px solid var(--leather);">
                 {% endif %}
             </div>
         </div>
@@ -40,7 +36,7 @@
         <div class="card h-100">
             <div class="card-body p-5 result-content">
                 <div class="ornament mb-3">❦ &nbsp; 📜 &nbsp; ❧</div>
-                {{ result | safe }}
+                {{ result_html | safe }}
                 <div class="ornament mt-4">❧</div>
             </div>
         </div>

@@ -1,7 +1,10 @@
-Flask
-requests
-Werkzeug
+Django
+django-markdown
+django-dotenv
 Pillow
-Markdown
-python-dotenv
 fpdf2
+requests
+gunicorn
+python-dotenv
+Markdown
+fpdf

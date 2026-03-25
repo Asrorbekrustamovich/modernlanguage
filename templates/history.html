@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center animate-ink">
+    <div class="col-md-10">
+        <div class="card border-0">
+            <div class="card-body p-5">
+                <div class="ornament mb-4">❧ &nbsp; 📜 &nbsp; ❧</div>
+                <h2 class="mb-4">Sizning tarjimalaringiz tarixi</h2>
+                
+                {% if results %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="text-sepia">
+                                <tr>
+                                    <th>Sana</th>
+                                    <th>Fayl nomi</th>
+                                    <th>Harakat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for res in results %}
+                                    <tr>
+                                        <td class="text-muted">{{ res.created_at|date:"Y-m-d H:i" }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-3" style="width: 40px; height: 50px; overflow: hidden; border: 1px solid var(--leather);">
+                                                    {% if res.original_image.name|lower|slice:"-4:" == ".pdf" %}
+                                                        <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
+                                                            📄
+                                                        </div>
+                                                    {% else %}
+                                                        <img src="{{ res.original_image.url }}" class="w-100 h-100" style="object-fit: cover;">
+                                                    {% endif %}
+                                                </div>
+                                                {{ res.original_image.name }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'result_detail' res.pk %}" class="btn btn-sm btn-outline-primary">Ko'rish</a>
+                                            <a href="{% url 'download_pdf' res.pk %}" class="btn btn-sm btn-link text-leather">PDF</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <p class="text-muted fs-5">Sizda hali tarjimalar yo'q.</p>
+                        <a href="{% url 'index' %}" class="btn btn-primary">Yangi tarjima boshlash</a>
+                    </div>
+                {% endif %}
+                
+                <div class="ornament mt-4">❦</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

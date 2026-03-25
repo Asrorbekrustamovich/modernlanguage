@@ -113,6 +113,17 @@ h1, h2, h3, h4, h5, .navbar-brand {
     border-color: var(--leather);
 }
 
+.btn-outline-leather {
+    color: var(--leather);
+    border-color: var(--leather);
+    background-color: transparent;
+}
+
+.btn-outline-leather:hover {
+    background-color: var(--leather);
+    color: var(--parchment);
+}
+
 /* Result Content */
 .result-content {
     font-size: 1.2rem;

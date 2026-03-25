@@ -1,31 +1,40 @@
-# Tarixiy Matn Tarjimoni
+# Tarixiy Matn Tarjimoni (Django Version)
 
-Bu loyiha eski yozuvlarni (arab, fors, chig'atoy tillaridagi nastaliq xati) rasm orqali o'qib, zamonaviy o'zbek tiliga tarjima qilib beruvchi veb-ilovadir. Ilova Python, Flask, Jinja2 va Google Gemini sun'iy intellektidan foydalanadi.
+Bu loyiha eski yozuvlarni rasm orqali o'qib, zamonaviy o'zbek tiliga tarjima qilib beruvchi veb-ilovadir.
 
-Siz ulagan rasm (masalan eski vaqtga tegishli hujjat) ustidagi yozuvlar generativ model orqali o'qilib (OCR) va matnga aylantirilib, so'ngra hozirgi zamonaviy o'zbek tiliga tarjima qilib beriladi.
-
-## O'rnatish tartibi
+## Lokal ishga tushirish
 
 1. Kerakli kutubxonalarni o'rnating:
-```bash
-pip install -r requirements.txt
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-2. Google Gemini API kalitini oling (https://aistudio.google.com/) va uni tizim o'zgaruvchisi (Environment Variable) sifatida saqlang:
+2. `.env` fayliga `GEMINI_API_KEY` ni yozing.
 
-Windows (Command Prompt):
-```bash
-set GEMINI_API_KEY=sizning_api_kalitingiz
-```
+3. Bazani tayyorlang:
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
+   python manage.py createsuperuser
+   ```
 
-Windows (PowerShell):
-```powershell
-$env:GEMINI_API_KEY="sizning_api_kalitingiz"
-```
+4. Lokal serverni ishga tushiring:
+   ```bash
+   python manage.py runserver
+   ```
 
-3. Dasturni ishga tushiring:
-```bash
-python app.py
-```
+## Serverda (Production) ishga tushirish
 
-4. Brauzeringizda quyidagi manzilga kiring: http://127.0.0.1:5000
+Serverda odatda `gunicorn` ishlatiladi:
+
+1. Statik fayllarni yig'ing:
+   ```bash
+   python manage.py collectstatic
+   ```
+
+2. Gunicorn bilan ishga tushiring:
+   ```bash
+   gunicorn config.wsgi:application --bind 0.0.0.0:8000
+   ```
+
+**Eslatma:** Serverda `DEBUG = False` (settings.py da) qilishni va `ALLOWED_HOSTS` ni to'ldirishni unutmang.

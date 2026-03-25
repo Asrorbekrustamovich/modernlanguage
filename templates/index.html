@@ -28,7 +28,8 @@
                         Sun'iy intellekt uni o'qib, tahlil qilib, hozirgi o'zbek tiliga tarjima qilib beradi.
                     </p>
 
-                    <form action="/" method="post" enctype="multipart/form-data">
+                    <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
                         <div class="mb-5 upload-area p-5 rounded-1 position-relative">
                             <input class="form-control file-input position-absolute w-100 h-100 top-0 start-0 opacity-0"
                                 type="file" id="file" name="file" accept="image/*,application/pdf" required style="cursor: pointer;">

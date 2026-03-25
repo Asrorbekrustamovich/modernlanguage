@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-5">
+                <div class="ornament mb-3">❧ &nbsp; 🔐 &nbsp; ❧</div>
+                <h2 class="text-center mb-4">Tizimga kirish</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Foydalanuvchi nomi</label>
+                        <input type="text" name="username" class="form-control" id="id_username" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_password" class="form-label">Parol</label>
+                        <div class="input-group">
+                            <input type="password" name="password" class="form-control" id="id_password" required>
+                            <button class="btn btn-outline-leather" type="button" id="togglePassword">
+                                👁️
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2">Kirish</button>
+                </form>
+
+                <script>
+                    const togglePassword = document.querySelector('#togglePassword');
+                    const password = document.querySelector('#id_password');
+                    
+                    togglePassword.addEventListener('click', function (e) {
+                        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                        password.setAttribute('type', type);
+                        this.textContent = type === 'password' ? '👁️' : '🕶️';
+                    });
+                </script>
+                <div class="ornament mt-4">❦</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
