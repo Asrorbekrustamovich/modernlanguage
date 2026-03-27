@@ -13,9 +13,10 @@ from django.http import HttpResponse
 from django.conf import settings
 from fpdf import FPDF
 from .models import TranslationResult
+from openai import OpenAI
 
 # Gemini API settings
-model_name = 'gemini-1.5-flash' # Barqaror va tezkor model
+model_name = 'gemini-2.5-flash' # Barqaror va tezkor model
 
 @login_required
 def index(request):
@@ -33,7 +34,6 @@ def index(request):
             # Modelni tanlash
             model_name = request.POST.get('model_name', 'gemini-1.5-flash')
             
-            # Reverting to requests approach as SDK version is outdated
             result_obj = TranslationResult(original_image=file)
             result_obj.save()
             filepath = result_obj.original_image.path
@@ -41,39 +41,77 @@ def index(request):
             with open(filepath, "rb") as f:
                 base64_data = base64.b64encode(f.read()).decode('utf-8')
             
-            headers = {'Content-Type': 'application/json'}
-            data = {
-                "contents": [{
-                    "parts": [
-                        {"text": "Ushbu rasmda yozilgan matnlarni o'qing, ularni zamonaviy o'zbek tiliga tarjima qiling va chuqur tahlilini bering. Markdown formatida chop eting."},
-                        {"inline_data": {"mime_type": "image/jpeg", "data": base64_data}}
-                    ]
-                }],
-                "generationConfig": {"temperature": 0.4}
-            }
+            prompt = "Ushbu rasmda yozilgan matnlarni o'qing, ularni zamonaviy o'zbek tiliga tarjima qiling va chuqur tahlilini bering. Markdown formatida chop eting."
             
-            # Request approach
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
-            response = requests.post(url, headers=headers, json=data)
-            
-            if response.status_code == 200:
-                resp_json = response.json()
-                candidates = resp_json.get('candidates', [])
-                if candidates and 'content' in candidates[0]:
-                    text = candidates[0]['content'].get('parts', [])[0].get('text', '')
-                    result_obj.result_markdown = text
-                    result_obj.save()
-                    
-                    result_html = md.markdown(text)
-                    return render(request, 'result.html', {
-                        'result_obj': result_obj,
-                        'result_html': result_html,
-                    })
-                else:
-                    raise Exception("Noma'lum javob formati")
+            if model_name.startswith('gpt'):
+                # OpenAI Support
+                openai_key = os.environ.get('OPENAI_API_KEY')
+                if not openai_key:
+                    messages.error(request, "OPENAI_API_KEY topilmadi!")
+                    return redirect('index')
+                
+                client = OpenAI(api_key=openai_key)
+                response = client.chat.completions.create(
+                    model=model_name,
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "text", "text": prompt},
+                                {
+                                    "type": "image_url",
+                                    "image_url": {
+                                        "url": f"data:image/jpeg;base64,{base64_data}",
+                                    },
+                                },
+                            ],
+                        }
+                    ],
+                    max_tokens=2000,
+                )
+                text = response.choices[0].message.content
+                result_obj.result_markdown = text
+                result_obj.save()
+                
+                result_html = md.markdown(text)
+                return render(request, 'result.html', {
+                    'result_obj': result_obj,
+                    'result_html': result_html,
+                })
             else:
-                error_msg = response.json().get('error', {}).get('message', 'Noma\'lum xatolik')
-                raise Exception(f"API Xatosi (Kodi {response.status_code}): {error_msg}")
+                # Gemini Support (Requests approach)
+                headers = {'Content-Type': 'application/json'}
+                data = {
+                    "contents": [{
+                        "parts": [
+                            {"text": prompt},
+                            {"inline_data": {"mime_type": "image/jpeg", "data": base64_data}}
+                        ]
+                    }],
+                    "generationConfig": {"temperature": 0.4}
+                }
+                
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+                response = requests.post(url, headers=headers, json=data)
+                
+                if response.status_code == 200:
+                    resp_json = response.json()
+                    candidates = resp_json.get('candidates', [])
+                    if candidates and 'content' in candidates[0]:
+                        text = candidates[0]['content'].get('parts', [])[0].get('text', '')
+                        result_obj.result_markdown = text
+                        result_obj.save()
+                        
+                        result_html = md.markdown(text)
+                        return render(request, 'result.html', {
+                            'result_obj': result_obj,
+                            'result_html': result_html,
+                        })
+                    else:
+                        raise Exception("Noma'lum javob formati")
+                else:
+                    error_msg = response.json().get('error', {}).get('message', 'Noma\'lum xatolik')
+                    raise Exception(f"API Xatosi (Kodi {response.status_code}): {error_msg}")
                 
         except Exception as e:
             messages.error(request, f"Xatolik yuz berdi: {str(e)}")

@@ -56,9 +56,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# CORS & CSRF Settings
+# CSRF & CORS Settings
 CORS_ALLOW_ALL_ORIGINS = True
-CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1', 'http://*.127.0.0.1', 'https://*.localhost', 'http://*.localhost']
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://127.0.0.1,https://127.0.0.1,http://localhost,https://localhost').split(',')
 
 ROOT_URLCONF = "config.urls"
 
@@ -139,9 +139,8 @@ LOGIN_URL = 'login'
 
 # PROD uchun xavfsizlik (ixtiyoriy, lekin serverda kerak)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
-# CSRF uchun barcha domenlarni ruxsat berish (agar kerak bo'lsa)
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://127.0.0.1,https://127.0.0.1,http://localhost,https://localhost').split(',')
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
