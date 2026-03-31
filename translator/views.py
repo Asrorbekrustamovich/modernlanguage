@@ -31,8 +31,8 @@ def index(request):
             messages.error(request, "Fayl tanlanmadi")
             return redirect('index')
         try:
-            # Modelni tanlash
-            model_name = request.POST.get('model_name', 'gemini-1.5-flash')
+            # Modelni tanlash (Faqat gemini-2.0-flash ishlatiladi)
+            model_name = 'gemini-2.5-flash'
             
             result_obj = TranslationResult(original_image=file)
             result_obj.save()

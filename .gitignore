@@ -3,3 +3,7 @@ __pycache__/
 static/uploads/
 venv/
 env/
+db.sqlite3
+media/
+static_root/
+*.pdf

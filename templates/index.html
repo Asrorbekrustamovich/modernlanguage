@@ -25,13 +25,7 @@
                     <form id="translation-form" action="{% url 'index' %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
 
-                        <div class="mb-4 text-start">
-                            <label for="model_select" class="form-label fw-bold" style="color: var(--leather);">Modelni tanlang:</label>
-                            <select name="model_name" id="model_select" class="form-select border-leather bg-transparent">
-                                <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash</option>
-                                <option value="gpt-4o">GPT-4.0 (OpenAI)</option>
-                            </select>
-                        </div>
+                        <input type="hidden" name="model_name" value="gemini-2.5-flash">
                         <div class="mb-5 upload-area p-5 rounded-1 position-relative">
                             <input class="form-control file-input position-absolute w-100 h-100 top-0 start-0 opacity-0"
                                 type="file" id="file" name="file" accept="image/*,application/pdf" required
