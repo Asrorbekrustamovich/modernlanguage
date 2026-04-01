@@ -202,7 +202,14 @@ def download_pdf(request, pk):
         pdf.set_font("Helvetica", 'I', 8)
         pdf.cell(0, 10, text="Tarixiy Matn Tarjimoni orqali yaratildi", align='C')
         
-        pdf_bytes = pdf.output()
+        # fpdf2 return type can be bytearray, need to ensure it's bytes for HttpResponse
+        pdf_output = pdf.output()
+        if isinstance(pdf_output, (bytearray, bytes)):
+            pdf_bytes = bytes(pdf_output)
+        elif isinstance(pdf_output, str):
+            pdf_bytes = pdf_output.encode('latin-1')
+        else:
+            pdf_bytes = pdf_output
         
         response = HttpResponse(pdf_bytes, content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="translation_{pk}.pdf"'

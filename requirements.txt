@@ -27,7 +27,6 @@ djangorestframework==3.15.2
 et_xmlfile==2.0.0
 Flask==2.3.3
 fonttools==4.57.0
-fpdf==1.7.2
 fpdf2==2.8.3
 google-ai-generativelanguage==0.1.0
 google-api-core==2.29.0
