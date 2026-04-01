@@ -1,0 +1,67 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+
+{% block content_title %}
+<h1>Oʻzgartirish uchun {{ opts.verbose_name }}ni tanlang</h1>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Actions counter translation (e.g. 0 of 3 selected)
+        const updateActionsCounter = () => {
+            const counter = document.querySelector('.action-counter');
+            if (counter) {
+                const text = counter.innerText;
+                const match = text.match(/(\d+) tadan (\d+) tasi tanlandi/); // Already translated if it's there
+                if (!match) {
+                    const enMatch = text.match(/(\d+) of (\d+) selected/);
+                    if (enMatch) {
+                        counter.innerText = `${enMatch[2]} tadan ${enMatch[1]} tasi tanlandi`;
+                    }
+                }
+            }
+        };
+
+        // MutationObserver to watch for changes in the counter
+        const observer = new MutationObserver(updateActionsCounter);
+        const counterEl = document.querySelector('.action-counter');
+        if (counterEl) {
+            observer.observe(counterEl, { childList: true, characterData: true, subtree: true });
+            updateActionsCounter();
+        }
+
+        // Filter search placeholder translation (Start typing to filter)
+        const translateFilters = () => {
+            document.querySelectorAll('input').forEach(input => {
+                const ph = input.getAttribute('placeholder');
+                if (ph) {
+                    if (ph.toLowerCase().includes('start typing to filter')) {
+                        input.placeholder = "Filtrlash uchun yozishni boshlang";
+                    } else if (ph.toLowerCase() === 'search') {
+                        input.placeholder = "Qidirish";
+                    }
+                }
+            });
+        };
+        translateFilters();
+
+        // Also observe for filters that might be loaded dynamically
+        const filterObserver = new MutationObserver(translateFilters);
+        const filterEl = document.getElementById('changelist-filter') || document.querySelector('.module.filtered');
+        if (filterEl) {
+            filterObserver.observe(filterEl, { childList: true, subtree: true });
+        }
+        // Universal observer for the body to catch any late injected inputs
+        const bodyObserver = new MutationObserver(translateFilters);
+        bodyObserver.observe(document.body, { childList: true, subtree: true });
+    });
+</script>
+<style>
+    /* Optional: Ensure the counter looks okay */
+    .action-counter {
+        display: inline-block !important;
+    }
+</style>
+{% endblock %}

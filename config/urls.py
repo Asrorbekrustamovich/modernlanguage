@@ -25,5 +25,10 @@ urlpatterns = [
     path("", include("translator.urls")),
 ]
 
+# Admin interfeysi sarlavhalarini o'zbekchaga o'zgartirish
+admin.site.site_header = "Tarixiy Matn Tarjimoni — Boshqaruv"
+admin.site.site_title = "Admin Paneli"
+admin.site.index_title = "Tizimni boshqarish bo'limi"
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
