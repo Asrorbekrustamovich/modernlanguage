@@ -115,11 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = "uz"
-
-LOCALE_PATHS = [
-    BASE_DIR / 'locale',
-]
+LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
 
@@ -133,7 +129,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT ="/home/azureuser/modernlaguange/staticfiles"
+STATIC_ROOT ="/home/azureuser/modernlaguange/staticfiles" 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
